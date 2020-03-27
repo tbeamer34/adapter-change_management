@@ -52,7 +52,7 @@ class ServiceNowConnector {
      *
      * @param {iapCallback} callback - Callback a function.
      * @param {(object|string)} callback.data - The API's response. Will be an object if sunnyday path.
-     *   Will be HTML text if hibernating instance.
+     *   Will be HTML text if Instance Hibernating page.
      * @param {error} callback.error - The error property of callback.
      */
     post(callback) {
@@ -84,7 +84,7 @@ class ServiceNowConnector {
      * @return {boolean} Returns true if instance is hibernating. Otherwise returns false.
      */
     isHibernating(response) {
-        return response.body.includes('Hibernating Instance')
+        return response.body.includes('Instance Hibernating page')
             && response.body.includes('<html>')
             && response.statusCode === 200;
     }
@@ -97,7 +97,7 @@ class ServiceNowConnector {
      * @param {string} body - The HTML body argument passed by the request function in its callback.
      * @param {iapCallback} callback - Callback a function.
      * @param {(object|string)} callback.data - The API's response. Will be an object if sunnyday path.
-     *   Will be HTML text if hibernating instance.
+     *   Will be HTML text if Instance Hibernating page.
      * @param {error} callback.error - The error property of callback.
      */
     processRequestResults(error, response, body, callback) {
