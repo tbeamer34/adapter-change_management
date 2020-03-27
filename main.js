@@ -206,7 +206,7 @@ class ServiceNowAdapter extends EventEmitter {
                 let Obj = JSON.parse(data.body);
                 let resultsArry = Obj.result;
                 let getArry = [];
-                for (let resultObj in resultsArry) {
+                for (let Obj in resultsArry) {
                     getArry.push({"change_ticket_number": resultsArry[Obj].number});
                     getArry.push({"active": resultsArry[Obj].active});
                     getArry.push({"priority": resultsArry[Obj].priority});
@@ -227,7 +227,7 @@ class ServiceNowAdapter extends EventEmitter {
      * @method postRecord
      * @summary Create ServiceNow Record
      * @description Creates a record in ServiceNow.
-     *@return object
+     * @return object
      * @param {ServiceNowAdapter~requestCallback} callback - The callback that
      *   handles the response.
      */
@@ -240,7 +240,7 @@ class ServiceNowAdapter extends EventEmitter {
          */
         let callbackData = null;
         let callbackError = null;
-        this.connector.post((data, error) => {
+        this.connector.post(this.connector.options,(data, error) => {
             if (error) {
                 console.error(`\nError POST request:\n${JSON.stringify(error)}`);
                 callbackError = error;
