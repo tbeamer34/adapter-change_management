@@ -1,4 +1,4 @@
-
+// Import built-in Node.js package path.
 const path = require('path');
 
 /**
@@ -96,6 +96,7 @@ class ServiceNowAdapter extends EventEmitter {
     healthcheck(callback) {
 
         this.getRecord((result, error) => {
+
             /**
              * For this lab, complete the if else conditional
              * statements that check if an error exists
@@ -132,7 +133,7 @@ class ServiceNowAdapter extends EventEmitter {
                  * responseData parameter.
                  *
                  */
-                log.debug(this.id + " has started");
+
                 this.emitOnline();
                 if (callback) {
                     callback(result, error);
@@ -183,6 +184,7 @@ class ServiceNowAdapter extends EventEmitter {
      * @method getRecord
      * @summary Get ServiceNow Record
      * @description Retrieves a record from ServiceNow.
+     * @returns array of objects
      *
      * @param {ServiceNowAdapter~requestCallback} callback - The callback that
      *   handles the response.
@@ -194,7 +196,30 @@ class ServiceNowAdapter extends EventEmitter {
          * Note how the object was instantiated in the constructor().
          * get() takes a callback function.
          */
-        this.connector.get(callback);
+        let callbackData = null;
+        let callbackError = null;
+        this.connector.get((data, error) => {
+            if (error) {
+                callbackError = error;
+                console.error(`\nError returned request:\n${JSON.stringify(error)}`);
+            } else {//if (data instanceof Object && data.hasOwnProperty('body'))
+                let Obj = JSON.parse(data.body);
+                let resultsArry = Obj.result;
+                let getArry = [];
+                for (let resultObj in resultsArry) {
+                    getArry.push({"change_ticket_number": resultsArry[Obj].number});
+                    getArry.push({"active": resultsArry[Obj].active});
+                    getArry.push({"priority": resultsArry[Obj].priority});
+                    getArry.push({"description": resultsArry[Obj].description});
+                    getArry.push({"work_start": resultsArry[Obj].work_start});
+                    getArry.push({"work_end": resultsArry[Obj].work_end});
+                    getArry.push({"change_ticket_key": resultsArry[Obj].sys_id});
+                    callbackData = arr;
+                    console.log(`\nResponse returned request:\n${JSON.stringify(callbackData)}`);
+                }
+            }
+            return callback(callbackData, callbackError);
+        });
     }
 
     /**
@@ -202,7 +227,7 @@ class ServiceNowAdapter extends EventEmitter {
      * @method postRecord
      * @summary Create ServiceNow Record
      * @description Creates a record in ServiceNow.
-     *
+     *@return object
      * @param {ServiceNowAdapter~requestCallback} callback - The callback that
      *   handles the response.
      */
@@ -213,7 +238,28 @@ class ServiceNowAdapter extends EventEmitter {
          * Note how the object was instantiated in the constructor().
          * post() takes a callback function.
          */
-        this.connector.post(callback);
+        let callbackData = null;
+        let callbackError = null;
+        this.connector.post((data, error) => {
+            if (error) {
+                console.error(`\nError POST request:\n${JSON.stringify(error)}`);
+                callbackError = error;
+            } else {
+                let Obj = JSON.parse(data.body);
+                let result = Obj.result;
+                let arr = [];
+                arr.push({"change_ticket_number": result.number});
+                arr.push({"active": result.active});
+                arr.push({"priority": result.priority});
+                arr.push({"description": result.description});
+                arr.push({"work_start": result.work_start});
+                arr.push({"work_end": result.work_end});
+                arr.push({"change_ticket_key": result.sys_id});
+                callbackData = Object.assign({}, arr);
+                console.log(`\nResponse POST request:\n${JSON.stringify(callbackData)}`);
+            }
+            return callback(callbackData, callbackError);
+        });
     }
 }
 
