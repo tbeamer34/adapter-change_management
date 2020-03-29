@@ -214,7 +214,7 @@ class ServiceNowAdapter extends EventEmitter {
                     getArry.push({"work_start": resultsArry[Obj].work_start});
                     getArry.push({"work_end": resultsArry[Obj].work_end});
                     getArry.push({"change_ticket_key": resultsArry[Obj].sys_id});
-                    callbackData = arr;
+                    callbackData = getArry;
                     console.log(`\nResponse returned request:\n${JSON.stringify(callbackData)}`);
                 }
             }
