@@ -206,14 +206,14 @@ class ServiceNowAdapter extends EventEmitter {
                 let Obj = JSON.parse(data.body);
                 let resultsArry = Obj.result;
                 let getArry = [];
-                for (let Obj in resultsArry) {
-                    getArry.push({"change_ticket_number": resultsArry[Obj].number});
-                    getArry.push({"active": resultsArry[Obj].active});
-                    getArry.push({"priority": resultsArry[Obj].priority});
-                    getArry.push({"description": resultsArry[Obj].description});
-                    getArry.push({"work_start": resultsArry[Obj].work_start});
-                    getArry.push({"work_end": resultsArry[Obj].work_end});
-                    getArry.push({"change_ticket_key": resultsArry[Obj].sys_id});
+                for (let i in resultsArry) {
+                    getArry.push({"change_ticket_number": resultsArry[i].number});
+                    getArry.push({"active": resultsArry[i].active});
+                    getArry.push({"priority": resultsArry[i].priority});
+                    getArry.push({"description": resultsArry[i].description});
+                    getArry.push({"work_start": resultsArry[i].work_start});
+                    getArry.push({"work_end": resultsArry[i].work_end});
+                    getArry.push({"change_ticket_key": resultsArry[i].sys_id});
                     callbackData = getArry;
                     console.log(`\nResponse returned request:\n${JSON.stringify(callbackData)}`);
                 }
