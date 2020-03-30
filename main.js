@@ -93,10 +93,14 @@ class ServiceNowAdapter extends EventEmitter {
      * @param {ServiceNowAdapter~requestCallback} [callback] - The optional callback
      *   that handles the response.
      */
-    healthcheck(callback) {
-        // We will build this method in a later lab. For now, it will emulate
-        // a healthy integration by emmitting ONLINE.
-        this.emitOnline();
+    healthcheck() {
+        this.connector.get((data, error) => {
+            if (error) {
+                this.emitOffline();
+            } else {
+                this.emitOnline();
+            }
+        });
     }
 
     /**
@@ -108,7 +112,7 @@ class ServiceNowAdapter extends EventEmitter {
      */
     emitOffline() {
         this.emitStatus('OFFLINE');
-        log.warn('ServiceNow: Instance is unavailable.');
+        log.warn('ServiceNow:' + this.id + 'Instance is unavailable.');
     }
 
     /**
@@ -178,6 +182,7 @@ class ServiceNowAdapter extends EventEmitter {
             }
         });
     }
+
     /**
      * @memberof ServiceNowAdapter
      * @method postRecord
@@ -217,4 +222,5 @@ class ServiceNowAdapter extends EventEmitter {
         });
     }
 }
+
 module.exports = ServiceNowAdapter;
