@@ -65,6 +65,11 @@ class ServiceNowAdapter extends EventEmitter {
             username: this.props.auth.username,
             password: this.props.auth.password,
             serviceNowTable: this.props.serviceNowTable
+            // For local testing
+            // url: 'https://dev97723.service-now.com/',
+            // username: 'admin',
+            // password: 'Embarq0%',
+            // serviceNowTable: 'change_request'
         });
     }
 
@@ -158,27 +163,13 @@ class ServiceNowAdapter extends EventEmitter {
          */
         this.connector.get((data, error) => {
             if (error) {
-                console.error(`\nError returned from GET request:\n${JSON.stringify(error)}`);
-                // return error;
-                callback(error);
-            }
-            if (data.hasOwnProperty('body')) {
-                let body_array = (JSON.parse(data.body));
-                let num_results = body_array.result.length;
-                let change_ticket = [];
-                for (let i = 0; i < num_results; i += 1) {
-                    let result_array = (JSON.parse(data.body).result);
-                    change_ticket.push({
-                        "change_ticket_number": result_array[i].number,
-                        "active": result_array[i].active,
-                        "priority": result_array[i].priority,
-                        "description": result_array[i].description,
-                        "work_start": result_array[i].work_start,
-                        "work_end": result_array[i].work_end,
-                        "change_ticket_key": result_array[i].sys_id
-                    });
-                }
-                callback(JSON.stringify(change_ticket));
+                callback(data, error);
+            } else if (data.body) {
+                let object = JSON.parse(data.body);
+                let mapObject = object.result.map(record => this.mapRecord(record));
+                callback(mapObject, error);
+            } else {
+                callback(data, error);
             }
         });
     }
@@ -201,26 +192,27 @@ class ServiceNowAdapter extends EventEmitter {
          */
         this.connector.post((data, error) => {
             if (error) {
-                callback(error);
-            }
-            if (data.hasOwnProperty('body')) {
-                let body_array = (JSON.parse(data.body));
-                let num_results = Object.keys(body_array).length;
-                let change_ticket = {};
-                for (let i = 0; i < num_results; i += 1) {
-                    let result_array = (JSON.parse(data.body).result);
-                    change_ticket.change_ticket_number = result_array.number;
-                    change_ticket.active = result_array.active;
-                    change_ticket.priority = result_array.priority;
-                    change_ticket.description = result_array.description;
-                    change_ticket.work_start = result_array.work_start;
-                    change_ticket.work_end = result_array.work_end;
-                    change_ticket.change_ticket_key = result_array.sys_id;
-                    callback(JSON.stringify(change_ticket));
-                }
+                callback(data, error)
+            } else if (data.body) {
+                let record = JSON.parse(data.body);
+                let formRecord = this.mapRecord(record.result);
+                callback(formRecord, error);
+            } else {
+                callback(data, error);
             }
         });
     }
-}
 
+    mapRecord(record) {
+        return {
+            "change_ticket_number": record.number,
+            "active": record.active,
+            "priority": record.priority,
+            "description": record.description,
+            "work_start": record.work_start,
+            "work_end": record.work_end,
+            "change_ticket_key": record.sys_id
+        };
+    }
+}
 module.exports = ServiceNowAdapter;
